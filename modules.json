@@ -1,0 +1,9 @@
+[
+  {
+    "id": "stock",
+    "name": "Gestion de Stock",
+    "active": true,
+    "path": "modules/stock/StockDashboard.tsx",
+    "icon": "📦"
+  }
+]

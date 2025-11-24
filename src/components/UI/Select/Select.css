@@ -1,0 +1,133 @@
+.select-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+}
+
+.select-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.select-required {
+  color: var(--secondary-color);
+  margin-left: 2px;
+}
+
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.select-field {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+  background-color: var(--bg-primary);
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.select-field:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 28, 64, 0.1);
+}
+
+.select-field:disabled {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.select-field option {
+  padding: var(--spacing-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.select-field option:disabled {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* États */
+.select-error {
+  border-color: var(--error-color);
+}
+
+.select-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.select-success {
+  border-color: var(--success-color);
+}
+
+.select-success:focus {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Flèche personnalisée */
+.select-arrow {
+  position: absolute;
+  top: 50%;
+  right: var(--spacing-md);
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+  z-index: 2;
+}
+
+.select-field:focus + .select-arrow {
+  color: var(--primary-color);
+}
+
+.select-field:disabled + .select-arrow {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+/* Animation de la flèche au focus */
+.select-field:focus + .select-arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Messages */
+.select-error-message {
+  color: var(--error-color);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.select-helper {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+}
+
+/* Variante avec icône */
+.select-with-icon {
+  padding-left: calc(var(--spacing-md) * 2 + 16px);
+}
+
+.select-icon {
+  position: absolute;
+  left: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  z-index: 2;
+}
