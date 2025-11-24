@@ -4,10 +4,41 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>brendoly-web-client</title>
+    <title>BRENDOLY SaaS</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <div id="small-screen-message">
+      Veuillez utiliser un ordinateur pour accéder à ce site.
+    </div>
+    <script>
+
+      document.addEventListener('DOMContentLoaded', (event) => {
+                
+          // Désactiver copier
+          document.addEventListener('copy', (e) => {
+              e.preventDefault();
+          });
+
+          // Désactiver couper
+          document.addEventListener('cut', (e) => {
+              e.preventDefault();
+          });
+
+          // Désactiver coller
+          document.addEventListener('paste', (e) => {
+              e.preventDefault();
+          });
+
+          /*// Autoriser le menu contextuel
+          document.addEventListener('contextmenu', (e) => {
+              // Pas besoin d'appeler preventDefault ici, puisque nous voulons permettre le menu contextuel
+              e.preventDefault();
+          });*/
+      });
+    
+
+    </script>
   </body>
 </html>

@@ -224,7 +224,7 @@ body {
 }
 
 .register-card {
-  max-width: 700px;
+  max-width: 1000px;
 }
 
 .auth-header {
@@ -243,7 +243,8 @@ body {
 }
 
 .auth-form {
-  margin-bottom: var(--spacing-lg);
+  display: flex;
+  gap: var(--spacing-sm);
 }
 
 .form-section-card {
@@ -380,5 +381,23 @@ body {
   
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Masquer le message par défaut */
+#small-screen-message {
+  display: none;
+  text-align: center;
+  font-size: 1.5rem;
+  margin-top: 50px;
+}
+
+ /* CSS pour cacher le body et afficher le message si écran < 1000px */
+@media (max-width: 999px) {
+  body > *:not(#small-screen-message) {
+    display: none !important; /* cache tout le body sauf le message */
+  }
+  #small-screen-message {
+    display: block;
   }
 }

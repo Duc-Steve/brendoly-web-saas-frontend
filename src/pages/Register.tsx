@@ -165,206 +165,203 @@ export default function Register() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          {/* Infos personnelles */}
-          <Card 
-            title="Informations personnelles" 
-            variant="default"
-            className="form-section-card"
-          >
-            <div className="form-row">
+        <form onSubmit={handleSubmit}>
+          <div className="auth-form">
+            {/* Infos personnelles */}
+            <Card 
+              title="Informations personnelles" 
+              variant="default"
+              className="form-section-card"
+            >
+                <Input
+                  label="Prénom"
+                  name="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  onFocus={() => clearFieldError("firstName")}
+                  error={fieldErrors.firstName}
+                  placeholder="Votre prénom"
+                  required
+                  disabled={loading}
+                />
+
+                <Input
+                  label="Nom"
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  onFocus={() => clearFieldError("lastName")}
+                  error={fieldErrors.lastName}
+                  placeholder="Votre nom"
+                  required
+                  disabled={loading}
+                />
+                <Input
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  onFocus={() => clearFieldError("email")}
+                  error={fieldErrors.email}
+                  placeholder="votre@email.com"
+                  required
+                  disabled={loading}
+                />
+
+                <Input
+                  label="Téléphone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  onFocus={() => clearFieldError("phone")}
+                  error={fieldErrors.phone}
+                  placeholder="+33 1 23 45 67 89"
+                  required
+                  disabled={loading}
+                />
+                <Input
+                  label="Mot de passe"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  onFocus={() => clearFieldError("password")}
+                  error={fieldErrors.password}
+                  placeholder="Créez un mot de passe sécurisé"
+                  required
+                  disabled={loading}
+                  helperText="Minimum 8 caractères avec majuscules, minuscules et chiffres"
+                />
+
+                <Input
+                  label="Confirmer le mot de passe"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                  onFocus={() => clearFieldError("confirmPassword")}
+                  error={fieldErrors.confirmPassword}
+                  placeholder="Confirmez votre mot de passe"
+                  required
+                  disabled={loading}
+                />
+            </Card>
+
+            {/* Infos entreprise */}
+            <Card 
+              title="Informations entreprise" 
+              variant="default"
+              className="form-section-card"
+            >
               <Input
-                label="Prénom"
-                name="firstName"
+                label="Nom de l'entreprise"
+                name="companyName"
                 type="text"
-                value={formData.firstName}
-                onChange={(e) => handleChange("firstName", e.target.value)}
-                onFocus={() => clearFieldError("firstName")}
-                error={fieldErrors.firstName}
-                placeholder="Votre prénom"
+                value={formData.companyName}
+                onChange={(e) => handleChange("companyName", e.target.value)}
+                onFocus={() => clearFieldError("companyName")}
+                error={fieldErrors.companyName}
+                placeholder="Nom de votre entreprise"
                 required
                 disabled={loading}
               />
 
-              <Input
-                label="Nom"
-                name="lastName"
-                type="text"
-                value={formData.lastName}
-                onChange={(e) => handleChange("lastName", e.target.value)}
-                onFocus={() => clearFieldError("lastName")}
-                error={fieldErrors.lastName}
-                placeholder="Votre nom"
-                required
-                disabled={loading}
-              />
-            </div>
+              <div className="form-row">
+                <Select
+                  label="Type d'entreprise"
+                  name="companyType"
+                  value={formData.companyType}
+                  onChange={(e) => handleChange("companyType", e.target.value)}
+                  disabled={loading}
+                  placeholder="Sélectionnez le type d'entreprise"
+                  required
+                  options={[
+                    { value: "SARL", label: "SARL" },
+                    { value: "SAS", label: "SAS" },
+                    { value: "SA", label: "SA" },
+                    { value: "ENTREPRENEUR", label: "ENTREPRENEUR" },
+                    { value: "EI", label: "Entreprise Individuelle" },
+                    { value: "other", label: "Autre" }
+                  ]}
+                />
 
-            <div className="form-row">
-              <Input
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                onFocus={() => clearFieldError("email")}
-                error={fieldErrors.email}
-                placeholder="votre@email.com"
-                required
-                disabled={loading}
-              />
+                <Select
+                  label="Secteur d'activité"
+                  name="industry"
+                  value={formData.industry}
+                  onChange={(e) => handleChange("industry", e.target.value)}
+                  disabled={loading}
+                  placeholder="Sélectionnez votre secteur"
+                  required
+                  options={sectors}
+                />
+              </div>
 
-              <Input
-                label="Téléphone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                onFocus={() => clearFieldError("phone")}
-                error={fieldErrors.phone}
-                placeholder="+33 1 23 45 67 89"
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-row">
-              <Input
-                label="Mot de passe"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-                onFocus={() => clearFieldError("password")}
-                error={fieldErrors.password}
-                placeholder="Créez un mot de passe sécurisé"
-                required
-                disabled={loading}
-                helperText="Minimum 8 caractères avec majuscules, minuscules et chiffres"
-              />
-
-              <Input
-                label="Confirmer le mot de passe"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleChange("confirmPassword", e.target.value)}
-                onFocus={() => clearFieldError("confirmPassword")}
-                error={fieldErrors.confirmPassword}
-                placeholder="Confirmez votre mot de passe"
-                required
-                disabled={loading}
-              />
-            </div>
-          </Card>
-
-          {/* Infos entreprise */}
-          <Card 
-            title="Informations entreprise" 
-            variant="default"
-            className="form-section-card"
-          >
-            <Input
-              label="Nom de l'entreprise"
-              name="companyName"
-              type="text"
-              value={formData.companyName}
-              onChange={(e) => handleChange("companyName", e.target.value)}
-              onFocus={() => clearFieldError("companyName")}
-              error={fieldErrors.companyName}
-              placeholder="Nom de votre entreprise"
-              required
-              disabled={loading}
-            />
-
-            <div className="form-row">
               <Select
-                label="Type d'entreprise"
-                name="companyType"
-                value={formData.companyType}
-                onChange={(e) => handleChange("companyType", e.target.value)}
+                label="Nombre d'employés"
+                name="employeesCount"
+                value={formData.employeesCount}
+                onChange={(e) => handleChange("employeesCount", e.target.value)}
                 disabled={loading}
-                placeholder="Sélectionnez le type d'entreprise"
+                placeholder="Sélectionnez le nombre d'employés"
                 options={[
-                  { value: "SARL", label: "SARL" },
-                  { value: "SAS", label: "SAS" },
-                  { value: "SA", label: "SA" },
-                  { value: "ENTREPRENEUR", label: "ENTREPRENEUR" },
-                  { value: "EI", label: "Entreprise Individuelle" },
-                  { value: "other", label: "Autre" }
+                  { value: "1", label: "1 (Micro)" },
+                  { value: "2-5", label: "2-5" },
+                  { value: "6-10", label: "6-10" },
+                  { value: "11-50", label: "11-50" },
+                  { value: "51-200", label: "51-200" },
+                  { value: "201+", label: "201+" }
                 ]}
               />
 
+              <Input
+                label="Adresse"
+                name="address"
+                type="text"
+                value={formData.address}
+                onChange={(e) => handleChange("address", e.target.value)}
+                placeholder="Adresse postale complète"
+                disabled={loading}
+              />
+
+              <div className="form-row">
+                <Input
+                  label="Ville"
+                  name="city"
+                  type="text"
+                  value={formData.city}
+                  onChange={(e) => handleChange("city", e.target.value)}
+                  placeholder="Ville"
+                  disabled={loading}
+                />
+
+                <Input
+                  label="Code postal"
+                  name="postalCode"
+                  type="text"
+                  value={formData.postalCode}
+                  onChange={(e) => handleChange("postalCode", e.target.value)}
+                  placeholder="Code postal"
+                  disabled={loading}
+                />
+              </div>
+
               <Select
-                label="Secteur d'activité"
-                name="industry"
-                value={formData.industry}
-                onChange={(e) => handleChange("industry", e.target.value)}
+                label="Pays"
+                name="country"
+                value={formData.country}
+                onChange={(e) => handleChange("country", e.target.value)}
                 disabled={loading}
-                placeholder="Sélectionnez votre secteur"
-                options={sectors}
+                placeholder="Sélectionnez votre pays"
+                required
+                options={country}
               />
-            </div>
-
-            <Select
-              label="Nombre d'employés"
-              name="employeesCount"
-              value={formData.employeesCount}
-              onChange={(e) => handleChange("employeesCount", e.target.value)}
-              disabled={loading}
-              placeholder="Sélectionnez le nombre d'employés"
-              options={[
-                { value: "1", label: "1 (Micro)" },
-                { value: "2-5", label: "2-5" },
-                { value: "6-10", label: "6-10" },
-                { value: "11-50", label: "11-50" },
-                { value: "51-200", label: "51-200" },
-                { value: "201+", label: "201+" }
-              ]}
-            />
-
-            <Input
-              label="Adresse"
-              name="address"
-              type="text"
-              value={formData.address}
-              onChange={(e) => handleChange("address", e.target.value)}
-              placeholder="Adresse postale complète"
-              disabled={loading}
-            />
-
-            <div className="form-row">
-              <Input
-                label="Ville"
-                name="city"
-                type="text"
-                value={formData.city}
-                onChange={(e) => handleChange("city", e.target.value)}
-                placeholder="Ville"
-                disabled={loading}
-              />
-
-              <Input
-                label="Code postal"
-                name="postalCode"
-                type="text"
-                value={formData.postalCode}
-                onChange={(e) => handleChange("postalCode", e.target.value)}
-                placeholder="Code postal"
-                disabled={loading}
-              />
-            </div>
-
-            <Select
-              label="Pays"
-              name="country"
-              value={formData.country}
-              onChange={(e) => handleChange("country", e.target.value)}
-              disabled={loading}
-              placeholder="Sélectionnez votre pays"
-              options={country}
-            />
-          </Card>
+            </Card>
+          </div>
 
           <Button
             type="submit"

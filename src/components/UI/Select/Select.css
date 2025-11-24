@@ -15,7 +15,8 @@
 
 .select-required {
   color: var(--secondary-color);
-  margin-left: 2px;
+  font-size: var(--spacing-md);
+  margin-left: 4px;
 }
 
 .select-wrapper {
