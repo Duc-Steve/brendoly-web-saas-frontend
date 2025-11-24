@@ -113,7 +113,6 @@ export default function Login() {
             size="medium"
             loading={loading}
             disabled={loading}
-            className="auth-button"
           >
             {loading ? "Connexion..." : "Se connecter"}
           </Button>

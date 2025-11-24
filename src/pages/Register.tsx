@@ -4,6 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { setUser } from "@/store/userSlice";
 import api from "@/api/axios.config";
 import { Button, Input, Card, Select } from '@/components/UI';
+import sectorsJson from "@/data/statics/sectors.json";
+import countryJson from "@/data/statics/country.json";
+
+
+
+// Type du secteur
+interface SelectOption {
+  value: string;
+  label: string;
+}
 
 // Type du formulaire
 interface RegisterForm {
@@ -60,6 +70,8 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Partial<RegisterForm>>({});
+  const sectors: SelectOption[] = sectorsJson as SelectOption[];
+  const country: SelectOption[] = countryJson as SelectOption[];
 
   // Envoi du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
@@ -162,7 +174,7 @@ export default function Register() {
           >
             <div className="form-row">
               <Input
-                label="Prénom *"
+                label="Prénom"
                 name="firstName"
                 type="text"
                 value={formData.firstName}
@@ -175,7 +187,7 @@ export default function Register() {
               />
 
               <Input
-                label="Nom *"
+                label="Nom"
                 name="lastName"
                 type="text"
                 value={formData.lastName}
@@ -190,7 +202,7 @@ export default function Register() {
 
             <div className="form-row">
               <Input
-                label="Email *"
+                label="Email"
                 name="email"
                 type="email"
                 value={formData.email}
@@ -203,7 +215,7 @@ export default function Register() {
               />
 
               <Input
-                label="Téléphone *"
+                label="Téléphone"
                 name="phone"
                 type="tel"
                 value={formData.phone}
@@ -218,7 +230,7 @@ export default function Register() {
 
             <div className="form-row">
               <Input
-                label="Mot de passe *"
+                label="Mot de passe"
                 name="password"
                 type="password"
                 value={formData.password}
@@ -232,7 +244,7 @@ export default function Register() {
               />
 
               <Input
-                label="Confirmer le mot de passe *"
+                label="Confirmer le mot de passe"
                 name="confirmPassword"
                 type="password"
                 value={formData.confirmPassword}
@@ -253,7 +265,7 @@ export default function Register() {
             className="form-section-card"
           >
             <Input
-              label="Nom de l'entreprise *"
+              label="Nom de l'entreprise"
               name="companyName"
               type="text"
               value={formData.companyName}
@@ -276,8 +288,8 @@ export default function Register() {
                 options={[
                   { value: "SARL", label: "SARL" },
                   { value: "SAS", label: "SAS" },
-                  { value: "SASU", label: "SASU" },
-                  { value: "EURL", label: "EURL" },
+                  { value: "SA", label: "SA" },
+                  { value: "ENTREPRENEUR", label: "ENTREPRENEUR" },
                   { value: "EI", label: "Entreprise Individuelle" },
                   { value: "other", label: "Autre" }
                 ]}
@@ -290,14 +302,7 @@ export default function Register() {
                 onChange={(e) => handleChange("industry", e.target.value)}
                 disabled={loading}
                 placeholder="Sélectionnez votre secteur"
-                options={[
-                  { value: "retail", label: "Commerce de détail" },
-                  { value: "wholesale", label: "Commerce de gros" },
-                  { value: "manufacturing", label: "Industrie manufacturière" },
-                  { value: "services", label: "Services" },
-                  { value: "tech", label: "Technologie" },
-                  { value: "other", label: "Autre" }
-                ]}
+                options={sectors}
               />
             </div>
 
@@ -357,23 +362,16 @@ export default function Register() {
               onChange={(e) => handleChange("country", e.target.value)}
               disabled={loading}
               placeholder="Sélectionnez votre pays"
-              options={[
-                { value: "FR", label: "France" },
-                { value: "BE", label: "Belgique" },
-                { value: "CH", label: "Suisse" },
-                { value: "LU", label: "Luxembourg" },
-                { value: "other", label: "Autre" }
-              ]}
+              options={country}
             />
           </Card>
 
           <Button
             type="submit"
             variant="primary"
-            size="large"
+            size="medium"
             loading={loading}
             disabled={loading}
-            className="auth-button"
           >
             {loading ? "Création du compte..." : "Créer mon compte"}
           </Button>

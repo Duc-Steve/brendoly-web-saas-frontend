@@ -2,6 +2,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-top: 2em;
+  width: 100%;
   gap: var(--spacing-sm);
   border: none;
   border-radius: var(--border-radius);
@@ -12,7 +14,6 @@
   text-decoration: none;
   position: relative;
   overflow: hidden;
-  margin-top: 2em;
 }
 
 .btn:disabled {
