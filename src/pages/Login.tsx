@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { setUser } from "@/store/userSlice";
-import api from "@/api/axios.config";
 import { Button, Input } from "@/components/UI";
+import { login } from "@/api/auth.api";
 
 interface LoginForm {
-  login: string;
+  credential: string;
   password: string;
 }
 
@@ -23,7 +23,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<LoginForm>({
-    login: "",
+    credential: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
@@ -43,7 +43,7 @@ export default function Login() {
     setError("");
 
     // Validation avant envoi
-    if (!formData.login.trim()) {
+    if (!formData.credential.trim()) {
       setError("L'email ou numéro est requis");
       return;
     }
@@ -55,17 +55,19 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await api.post("/auth/login", formData);
+      const response = await login(formData);
 
+      // Dispatch des données utilisateur avec la structure correcte
       dispatch(
         setUser({
-          token: response.data.token,
-          user: response.data.user,
-          tenant_id: response.data.tenant_id,
-        })
+          token: response.token,
+          user: response.user,
+          tenant: response.tenant,
+        }),
+
+        navigate("/")
       );
 
-      navigate("/");
     } catch (err: unknown) {
       const apiErr = err as ApiError;
       setError(apiErr.response?.data?.message || "Erreur de connexion");
@@ -89,8 +91,8 @@ export default function Login() {
             label="Email ou numéro"
             name="login"
             type="text"
-            value={formData.login}
-            onChange={(e) => handleChange("login", e.target.value)}
+            value={formData.credential}
+            onChange={(e) => handleChange("credential", e.target.value)}
             placeholder="Entrez votre email ou numéro"
             required
             disabled={loading}

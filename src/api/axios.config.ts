@@ -1,15 +1,16 @@
 import axios from "axios";
-import { store } from "@/store";
+import { store } from "../store";
 
 /**
  * Configuration globale d'Axios pour les appels API
  * Inclut l'intercepteur pour ajouter automatiquement les headers d'authentification
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: 'api',
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
+    "Accept": "application/json",
   },
 });
 
@@ -31,11 +32,45 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercepteur pour gérer les erreurs globales
+// Intercepteur pour gérer les erreurs globales et le rafraîchissement de token
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Si erreur 401 (Unauthorized) et pas déjà en cours de rafraîchissement
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Tentative de rafraîchissement du token
+        const { refreshToken } = await import('./auth.api');
+        const { token } = await refreshToken();
+        
+        // Mise à jour du token dans le store
+        store.dispatch({ type: 'user/updateToken', payload: token });
+        
+        // Nouvelle tentative de la requête originale
+        originalRequest.headers['Authorization'] = `Bearer ${token}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        // Si le rafraîchissement échoue, déconnexion
+        store.dispatch({ type: 'user/logout' });
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Gestion des autres erreurs
     console.error("API Error:", error);
+    
+    // Gestion spécifique des erreurs de validation Laravel
+    if (error.response?.status === 422 && error.response.data?.errors) {
+      const validationErrors = error.response.data.errors;
+      const firstError = Object.values(validationErrors)[0] as string[];
+      error.message = firstError?.[0] || 'Erreur de validation';
+    }
+    
     return Promise.reject(error);
   }
 );

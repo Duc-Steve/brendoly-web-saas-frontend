@@ -256,6 +256,10 @@ body {
   padding: var(--spacing-lg);
 }
 
+.form-section-card.personnelles {
+   width: 450px;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -290,7 +294,7 @@ body {
 .error-message {
   background: #fef2f2;
   color: var(--error-color);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   border-radius: var(--border-radius);
   margin-bottom: var(--spacing-md);
   border: 1px solid #fecaca;

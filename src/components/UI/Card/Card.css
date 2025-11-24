@@ -64,7 +64,7 @@
   color: var(--text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 0;
 }
 
 .card-subtitle {

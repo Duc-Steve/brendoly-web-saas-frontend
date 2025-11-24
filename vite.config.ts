@@ -10,4 +10,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  server: {
+    host: 'localhost',
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://brendoly-saas.local',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path
+      }
+    }
+  }
 })

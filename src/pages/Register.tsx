@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { setUser } from "@/store/userSlice";
-import api from "@/api/axios.config";
+import { register } from "@/api/auth.api";
 import { Button, Input, Card, Select } from '@/components/UI';
 import sectorsJson from "@/data/statics/sectors.json";
 import countryJson from "@/data/statics/country.json";
-
-
 
 // Type du secteur
 interface SelectOption {
@@ -17,20 +13,38 @@ interface SelectOption {
 
 // Type du formulaire
 interface RegisterForm {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   password: string;
   confirmPassword: string;
-  companyName: string;
-  companyType: string;
-  industry: string;
-  employeesCount: string;
-  country: string;
-  address: string;
-  city: string;
-  postalCode: string;
+  company_name: string;
+  company_type: string;
+  company_sector: string;
+  company_employees_number: string;
+  company_country: string;
+  company_address: string;
+  company_city: string;
+  company_zipcode: string;
+}
+
+// Type pour les données d'enregistrement API
+interface RegisterData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  password: string;
+  password_confirmation: string;
+  company_name: string;
+  company_type: string;
+  company_sector: string;
+  company_country: string;
+  company_employees_number?: string;
+  company_address?: string;
+  company_city?: string;
+  company_zipcode?: string;
 }
 
 // Type pour une erreur API
@@ -46,32 +60,31 @@ interface ApiError {
  * Page d'inscription
  */
 export default function Register() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Données du formulaire
   const [formData, setFormData] = useState<RegisterForm>({
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     email: "",
     phone: "",
     password: "",
     confirmPassword: "",
-    companyName: "",
-    companyType: "",
-    industry: "",
-    employeesCount: "",
-    country: "",
-    address: "",
-    city: "",
-    postalCode: "",
+    company_name: "",
+    company_type: "",
+    company_sector: "",
+    company_employees_number: "",
+    company_country: "",
+    company_address: "",
+    company_city: "",
+    company_zipcode: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Partial<RegisterForm>>({});
   const sectors: SelectOption[] = sectorsJson as SelectOption[];
-  const country: SelectOption[] = countryJson as SelectOption[];
+  const countryList: SelectOption[] = countryJson as SelectOption[];
 
   // Envoi du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,52 +93,83 @@ export default function Register() {
     setError("");
     setFieldErrors({});
 
-    // Validation des mots de passe
-    if (formData.password !== formData.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
-      setFieldErrors({ confirmPassword: "Les mots de passe ne correspondent pas" });
-      setLoading(false);
-      return;
-    }
-
-    // Validation des champs requis
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'password', 'companyName'];
-    const newFieldErrors: Partial<RegisterForm> = {};
-    
-    requiredFields.forEach(field => {
-      if (!formData[field as keyof RegisterForm]) {
-        newFieldErrors[field as keyof RegisterForm] = "Ce champ est requis";
-      }
-    });
-
-    if (Object.keys(newFieldErrors).length > 0) {
-      setFieldErrors(newFieldErrors);
-      setError("Veuillez remplir tous les champs obligatoires");
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Requête API
-      const response = await api.post("/auth/register", formData);
+      // Validation côté client
+      const validation = validateForm(formData);
+      if (!validation.isValid) {
+        setFieldErrors(validation.fieldErrors);
+        setError(validation.errorMessage);
+        setLoading(false);
+        return;
+      }
 
-      // Sauvegarde des données utilisateur
-      dispatch(
-        setUser({
-          token: response.data.token,
-          user: response.data.user,
-          tenant_id: response.data.tenant_id,
-        })
-      );
+      // Préparation des données pour l'API
+      const registerData: RegisterData = {
+        first_name: formData.first_name.trim(),
+        last_name: formData.last_name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
+        password: formData.password,
+        password_confirmation: formData.confirmPassword,
+        company_name: formData.company_name.trim(),
+        company_type: formData.company_type,
+        company_sector: formData.company_sector,
+        company_country: formData.company_country,
+        company_employees_number: formData.company_employees_number || undefined,
+        company_address: formData.company_address?.trim() || undefined,
+        company_city: formData.company_city?.trim() || undefined,
+        company_zipcode: formData.company_zipcode?.trim() || undefined,
+      };
 
-      // Redirection
-      navigate("/");
+      // Appel API
+      await register(registerData);
+
+      // Redirection vers le dashboard
+      navigate("/", { replace: true });
+
     } catch (err: unknown) {
       const apiErr = err as ApiError;
-      setError(apiErr.response?.data?.message || "Erreur lors de l'inscription");
+      setError(apiErr.response?.data?.message || "Erreur de connexion");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fonction de validation
+  const validateForm = (data: RegisterForm): { isValid: boolean; fieldErrors: Partial<RegisterForm>; errorMessage: string } => {
+    const fieldErrors: Partial<RegisterForm> = {};
+    
+    // Validation des champs requis
+    if (!data.first_name.trim()) fieldErrors.first_name = "Le prénom est requis";
+    if (!data.last_name.trim()) fieldErrors.last_name = "Le nom est requis";
+    if (!data.email.trim()) fieldErrors.email = "L'email est requis";
+    if (!data.phone.trim()) fieldErrors.phone = "Le téléphone est requis";
+    if (!data.password) fieldErrors.password = "Le mot de passe est requis";
+    if (!data.confirmPassword) fieldErrors.confirmPassword = "La confirmation du mot de passe est requise";
+    if (!data.company_name.trim()) fieldErrors.company_name = "Le nom de l'entreprise est requis";
+    if (!data.company_type) fieldErrors.company_type = "Le type d'entreprise est requis";
+    if (!data.company_sector) fieldErrors.company_sector = "Le secteur d'activité est requis";
+    if (!data.company_country) fieldErrors.company_country = "Le pays est requis";
+
+    // Validation des mots de passe
+    if (data.password && data.confirmPassword && data.password !== data.confirmPassword) {
+      fieldErrors.confirmPassword = "Les mots de passe ne correspondent pas";
+    }
+
+    // Validation de l'email
+    if (data.email && !/\S+@\S+\.\S+/.test(data.email)) {
+      fieldErrors.email = "L'email n'est pas valide";
+    }
+
+    // Validation de la longueur du mot de passe
+    if (data.password && data.password.length < 6) {
+      fieldErrors.password = "Le mot de passe doit contenir au moins 6 caractères";
+    }
+
+    const isValid = Object.keys(fieldErrors).length === 0;
+    const errorMessage = isValid ? "" : "Veuillez corriger les erreurs dans le formulaire";
+
+    return { isValid, fieldErrors, errorMessage };
   };
 
   // Mise à jour des champs
@@ -171,16 +215,17 @@ export default function Register() {
             <Card 
               title="Informations personnelles" 
               variant="default"
-              className="form-section-card"
+              className="form-section-card personnelles"
             >
+              <div className="form-grid">
                 <Input
                   label="Prénom"
-                  name="firstName"
+                  name="first_name"
                   type="text"
-                  value={formData.firstName}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
-                  onFocus={() => clearFieldError("firstName")}
-                  error={fieldErrors.firstName}
+                  value={formData.first_name}
+                  onChange={(e) => handleChange("first_name", e.target.value)}
+                  onFocus={() => clearFieldError("first_name")}
+                  error={fieldErrors.first_name}
                   placeholder="Votre prénom"
                   required
                   disabled={loading}
@@ -188,16 +233,17 @@ export default function Register() {
 
                 <Input
                   label="Nom"
-                  name="lastName"
+                  name="last_name"
                   type="text"
-                  value={formData.lastName}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
-                  onFocus={() => clearFieldError("lastName")}
-                  error={fieldErrors.lastName}
+                  value={formData.last_name}
+                  onChange={(e) => handleChange("last_name", e.target.value)}
+                  onFocus={() => clearFieldError("last_name")}
+                  error={fieldErrors.last_name}
                   placeholder="Votre nom"
                   required
                   disabled={loading}
                 />
+
                 <Input
                   label="Email"
                   name="email"
@@ -223,6 +269,7 @@ export default function Register() {
                   required
                   disabled={loading}
                 />
+
                 <Input
                   label="Mot de passe"
                   name="password"
@@ -234,7 +281,7 @@ export default function Register() {
                   placeholder="Créez un mot de passe sécurisé"
                   required
                   disabled={loading}
-                  helperText="Minimum 8 caractères avec majuscules, minuscules et chiffres"
+                  helperText="Minimum 6 caractères"
                 />
 
                 <Input
@@ -249,6 +296,7 @@ export default function Register() {
                   required
                   disabled={loading}
                 />
+              </div>
             </Card>
 
             {/* Infos entreprise */}
@@ -257,121 +305,132 @@ export default function Register() {
               variant="default"
               className="form-section-card"
             >
-              <Input
-                label="Nom de l'entreprise"
-                name="companyName"
-                type="text"
-                value={formData.companyName}
-                onChange={(e) => handleChange("companyName", e.target.value)}
-                onFocus={() => clearFieldError("companyName")}
-                error={fieldErrors.companyName}
-                placeholder="Nom de votre entreprise"
-                required
-                disabled={loading}
-              />
-
-              <div className="form-row">
-                <Select
-                  label="Type d'entreprise"
-                  name="companyType"
-                  value={formData.companyType}
-                  onChange={(e) => handleChange("companyType", e.target.value)}
-                  disabled={loading}
-                  placeholder="Sélectionnez le type d'entreprise"
+              <div className="form-grid">
+                <Input
+                  label="Nom de l'entreprise"
+                  name="company_name"
+                  type="text"
+                  value={formData.company_name}
+                  onChange={(e) => handleChange("company_name", e.target.value)}
+                  onFocus={() => clearFieldError("company_name")}
+                  error={fieldErrors.company_name}
+                  placeholder="Nom de votre entreprise"
                   required
+                  disabled={loading}
+                />
+
+                <div className="form-row">
+                  <Select
+                    label="Type d'entreprise"
+                    name="company_type"
+                    value={formData.company_type}
+                    onChange={(e) => handleChange("company_type", e.target.value)}
+                    onFocus={() => clearFieldError("company_type")}
+                    disabled={loading}
+                    placeholder="Sélectionnez le type d'entreprise"
+                    required
+                    error={fieldErrors.company_type}
+                    options={[
+                      { value: "SARL", label: "SARL" },
+                      { value: "SAS", label: "SAS" },
+                      { value: "SA", label: "SA" },
+                      { value: "ENTREPRENEUR", label: "ENTREPRENEUR" },
+                      { value: "EI", label: "Entreprise Individuelle" },
+                      { value: "other", label: "Autre" }
+                    ]}
+                  />
+
+                  <Select
+                    label="Secteur d'activité"
+                    name="company_sector"
+                    value={formData.company_sector}
+                    onChange={(e) => handleChange("company_sector", e.target.value)}
+                    onFocus={() => clearFieldError("company_sector")}
+                    disabled={loading}
+                    placeholder="Sélectionnez votre secteur"
+                    required
+                    error={fieldErrors.company_sector}
+                    options={sectors}
+                  />
+
+                </div>
+
+                <Select
+                  label="Nombre d'employés"
+                  name="company_employees_number"
+                  value={formData.company_employees_number}
+                  onChange={(e) => handleChange("company_employees_number", e.target.value)}
+                  disabled={loading}
+                  placeholder="Sélectionnez le nombre d'employés"
                   options={[
-                    { value: "SARL", label: "SARL" },
-                    { value: "SAS", label: "SAS" },
-                    { value: "SA", label: "SA" },
-                    { value: "ENTREPRENEUR", label: "ENTREPRENEUR" },
-                    { value: "EI", label: "Entreprise Individuelle" },
-                    { value: "other", label: "Autre" }
+                    { value: "1", label: "1 (Micro)" },
+                    { value: "2-5", label: "2-5" },
+                    { value: "6-10", label: "6-10" },
+                    { value: "11-50", label: "11-50" },
+                    { value: "51-200", label: "51-200" },
+                    { value: "201+", label: "201+" }
                   ]}
                 />
 
                 <Select
-                  label="Secteur d'activité"
-                  name="industry"
-                  value={formData.industry}
-                  onChange={(e) => handleChange("industry", e.target.value)}
+                  label="Pays"
+                  name="company_country"
+                  value={formData.company_country}
+                  onChange={(e) => handleChange("company_country", e.target.value)}
+                  onFocus={() => clearFieldError("company_country")}
                   disabled={loading}
-                  placeholder="Sélectionnez votre secteur"
+                  placeholder="Sélectionnez votre pays"
                   required
-                  options={sectors}
-                />
-              </div>
-
-              <Select
-                label="Nombre d'employés"
-                name="employeesCount"
-                value={formData.employeesCount}
-                onChange={(e) => handleChange("employeesCount", e.target.value)}
-                disabled={loading}
-                placeholder="Sélectionnez le nombre d'employés"
-                options={[
-                  { value: "1", label: "1 (Micro)" },
-                  { value: "2-5", label: "2-5" },
-                  { value: "6-10", label: "6-10" },
-                  { value: "11-50", label: "11-50" },
-                  { value: "51-200", label: "51-200" },
-                  { value: "201+", label: "201+" }
-                ]}
-              />
-
-              <Input
-                label="Adresse"
-                name="address"
-                type="text"
-                value={formData.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                placeholder="Adresse postale complète"
-                disabled={loading}
-              />
-
-              <div className="form-row">
-                <Input
-                  label="Ville"
-                  name="city"
-                  type="text"
-                  value={formData.city}
-                  onChange={(e) => handleChange("city", e.target.value)}
-                  placeholder="Ville"
-                  disabled={loading}
+                  error={fieldErrors.company_country}
+                  options={countryList}
                 />
 
                 <Input
-                  label="Code postal"
-                  name="postalCode"
+                  label="Adresse"
+                  name="company_address"
                   type="text"
-                  value={formData.postalCode}
-                  onChange={(e) => handleChange("postalCode", e.target.value)}
-                  placeholder="Code postal"
+                  value={formData.company_address}
+                  onChange={(e) => handleChange("company_address", e.target.value)}
+                  placeholder="Adresse postale complète"
                   disabled={loading}
                 />
-              </div>
 
-              <Select
-                label="Pays"
-                name="country"
-                value={formData.country}
-                onChange={(e) => handleChange("country", e.target.value)}
-                disabled={loading}
-                placeholder="Sélectionnez votre pays"
-                required
-                options={country}
-              />
+                <div className="form-row">
+                  <Input
+                    label="Ville"
+                    name="company_city"
+                    type="text"
+                    value={formData.company_city}
+                    onChange={(e) => handleChange("company_city", e.target.value)}
+                    placeholder="Ville"
+                    disabled={loading}
+                  />
+
+                  <Input
+                    label="Code postal"
+                    name="company_zipcode"
+                    type="text"
+                    value={formData.company_zipcode}
+                    onChange={(e) => handleChange("company_zipcode", e.target.value)}
+                    placeholder="Code postal"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
             </Card>
           </div>
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="medium"
-            loading={loading}
-            disabled={loading}
-          >
-            {loading ? "Création du compte..." : "Créer mon compte"}
-          </Button>
+          <div className="form-submit">
+            <Button
+              type="submit"
+              variant="primary"
+              size="medium"
+              loading={loading}
+              disabled={loading}
+            >
+              {loading ? "Création du compte..." : "Créer mon compte"}
+            </Button>
+          </div>
         </form>
 
         <div className="auth-footer">
