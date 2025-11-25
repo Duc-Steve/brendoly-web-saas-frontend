@@ -4,6 +4,7 @@ import { register } from "@/api/auth.api";
 import { Button, Input, Card, Select } from '@/components/UI';
 import sectorsJson from "@/data/statics/sectors.json";
 import countryJson from "@/data/statics/country.json";
+import FormMessage from "@/components/UI/FormMessage/FormMessage";
 
 // Type du secteur
 interface SelectOption {
@@ -80,8 +81,31 @@ export default function Register() {
     company_zipcode: "",
   });
 
+  // Vider les données
+  const resetForm = () => {
+    setFormData({
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+      company_name: "",
+      company_type: "",
+      company_sector: "",
+      company_employees_number: "",
+      company_country: "",
+      company_address: "",
+      company_city: "",
+      company_zipcode: "",
+    });
+    setFieldErrors({});
+  };
+
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Partial<RegisterForm>>({});
   const sectors: SelectOption[] = sectorsJson as SelectOption[];
   const countryList: SelectOption[] = countryJson as SelectOption[];
@@ -125,7 +149,14 @@ export default function Register() {
       await register(registerData);
 
       // Redirection vers le dashboard
-      navigate("/", { replace: true });
+      setSuccess("Ton compte est créé. Tu peux te connecter.");
+      
+      // Vider les données
+      resetForm();
+      
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 2000);
 
     } catch (err: unknown) {
       const apiErr = err as ApiError;
@@ -203,10 +234,12 @@ export default function Register() {
           <p>Rejoins l'espace BRENDOLY SaaS</p>
         </div>
 
+        {success && (
+          <FormMessage type="success" message={success} />
+        )}
+
         {error && (
-          <div className="error-message">
-            {error}
-          </div>
+          <FormMessage type="error" message={error} />
         )}
 
         <form onSubmit={handleSubmit}>

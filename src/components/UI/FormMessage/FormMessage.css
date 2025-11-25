@@ -1,0 +1,18 @@
+
+.error-message {
+  background: #fef2f2;
+  color: var(--error-color);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid #fecaca;
+}
+
+.success-message {
+  background: #c6f3e4;
+  color: var(--success-color);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid #69b89e;
+}

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { setUser } from "@/store/userSlice";
 import { Button, Input } from "@/components/UI";
 import { login } from "@/api/auth.api";
+import FormMessage from "@/components/UI/FormMessage/FormMessage";
 
 interface LoginForm {
   credential: string;
@@ -58,15 +59,11 @@ export default function Login() {
       const response = await login(formData);
 
       // Dispatch des données utilisateur avec la structure correcte
-      dispatch(
-        setUser({
-          token: response.token,
-          user: response.user,
-          tenant: response.tenant,
-        }),
-
-        navigate("/")
-      );
+      dispatch(setUser({
+        user: response.user,
+        tenant: response.tenant,
+      }));
+      navigate("/", { replace: true });
 
     } catch (err: unknown) {
       const apiErr = err as ApiError;
@@ -84,12 +81,14 @@ export default function Login() {
           <p>Accède à ton compte BRENDOLY SaaS</p>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <FormMessage type="error" message={error} />
+        )}
 
         <form onSubmit={handleSubmit}>
           <Input
             label="Email ou numéro"
-            name="login"
+            name="credential"
             type="text"
             value={formData.credential}
             onChange={(e) => handleChange("credential", e.target.value)}

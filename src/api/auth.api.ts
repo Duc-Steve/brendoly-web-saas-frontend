@@ -1,88 +1,8 @@
 import api from '@/api/axios.config';
+import type { RegisterData, AuthResponse,
+  LoginCredentials, ForgotPasswordData, VerifyCodeData, ResetPasswordData, ChangePasswordData
+ } from "@/types/UserTenantType";
 
-// Types basés sur vos modèles Laravel
-export interface LoginCredentials {
-  credential: string; // Email ou numéro de téléphone
-  password: string;
-}
-
-export interface RegisterData {
-  // Informations personnelles
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  password: string;
-  password_confirmation: string;
-  
-  // Informations entreprise
-  company_name: string;
-  company_type: string;
-  company_sector: string;
-  company_employees_number?: string;
-  company_country: string;
-  company_address?: string;
-  company_city?: string;
-  company_zipcode?: string;
-}
-
-export interface ForgotPasswordData {
-  email: string;
-}
-
-export interface VerifyCodeData {
-  email: string;
-  code: string;
-}
-
-export interface ResetPasswordData {
-  email: string;
-  code: string;
-  password: string;
-  password_confirmation: string;
-}
-
-export interface ChangePasswordData {
-  current_password: string;
-  new_password: string;
-  new_password_confirmation: string;
-}
-
-export interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  email_verified_at: string | null;
-  phone_verified_at: string | null;
-  is_active: boolean;
-  tenant_id: string;
-}
-
-export interface Tenant {
-  id: string;
-  name: string;
-  type: string;
-  sector: string;
-  employees_number: string | null;
-  address: string | null;
-  city: string | null;
-  country: string;
-  is_active: boolean;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
-  tenant: Tenant;
-  expires_in: number;
-}
-
-export interface ProfileResponse {
-  user: User;
-  tenant: Tenant | null;
-}
 
 // === ROUTES PUBLIQUES ===
 
@@ -144,13 +64,12 @@ export const getCurrentUser = async (): Promise<AuthResponse['user']> => {
   return response.data;
 };
 
-/**
- * Rafraîchissement du token
- */
-export const refreshToken = async (): Promise<{ token: string; expires_in: number }> => {
-  const response = await api.post('/auth/refresh');
+// Vérifie si l'utilisateur est connecté (session valide côté serveur)
+export const checkSession = async (): Promise<AuthResponse> => {
+  const response = await api.get('/auth/check-session', { withCredentials: true });
   return response.data;
 };
+
 
 /**
  * Vérification de code (protégé - pour changement de mot de passe)
@@ -215,9 +134,9 @@ export default {
   verifyCode,
   resetPassword,
   getCurrentUser,
-  refreshToken,
   verifyAuthCode,
   resetAuthPassword,
   changePassword,
   passwordApi,
+  checkSession,
 };

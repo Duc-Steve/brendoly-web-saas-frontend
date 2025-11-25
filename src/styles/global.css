@@ -291,15 +291,6 @@ body {
   text-decoration: underline;
 }
 
-.error-message {
-  background: #fef2f2;
-  color: var(--error-color);
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius);
-  margin-bottom: var(--spacing-md);
-  border: 1px solid #fecaca;
-}
-
 /* Dashboard Styles */
 .dashboard {
   padding: var(--spacing-lg);
