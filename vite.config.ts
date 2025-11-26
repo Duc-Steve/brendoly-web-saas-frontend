@@ -11,14 +11,13 @@ export default defineConfig({
     },
   },
   server: {
-    host: 'localhost',
+    host: 'brendoly-saas.local',
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://brendoly-saas.local',
+        target: 'http://api.brendoly-saas.local', // backend Laravel
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path
+        secure: false
       }
     }
   }

@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setUser, logout } from "@/store/userSlice";
-import authApi from "@/api/auth.api";
-
+import { logout } from "@/store/userSlice";
+import { checkSession } from "@/api/auth.api";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -15,14 +14,18 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   const [authenticated, setAuthenticated] = useState(false);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+ useEffect(() => {
     const verifySession = async () => {
       try {
-        const data = await authApi.checkSession(); // <-- vérifie via API
-        dispatch(setUser(
-          { user: data.user, tenant: data.tenant }));
-        setAuthenticated(true);
-      } catch {
+        const data = await checkSession();
+        setAuthenticated(data.authenticated);
+
+        if (!data.authenticated) {
+          alert("Votre session a expiré ou vous n'êtes pas connecté !");
+          dispatch(logout());
+        }
+      } catch (error: unknown) {
+        alert("Erreur lors de la vérification de la session !");
         dispatch(logout());
         setAuthenticated(false);
       } finally {
@@ -38,4 +41,3 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
   return <>{children}</>;
 }
-

@@ -86,6 +86,10 @@ export interface AuthResponse {
   expires_in: number;
 }
 
+export interface CheckSessionResponse {
+  authenticated: boolean;
+}
+
 export interface ProfileResponse {
   user: UserType;
   tenant: TenantType | null;
